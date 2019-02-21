@@ -44,10 +44,8 @@ public class BluetoothManager implements DiscoveryListener {
 		try {	
 			this.mLocalDevice = LocalDevice.getLocalDevice();
 			mDevices.clear();
-			//ObexClient obex = new ObexClient();
 		} catch (IOException e) {
 			e.printStackTrace();
-			//mClient.mTCP.sendDataDB(e.toString());
 		}
 	}
 
@@ -84,10 +82,8 @@ public class BluetoothManager implements DiscoveryListener {
 				mAgent.startInquiry(DiscoveryAgent.LIAC, this);
 			} catch (BluetoothStateException e){
 				e.printStackTrace();
-				//mClient.mTCP.sendDataDB(e.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
-				//mClient.mTCP.sendDataDB(e.toString());
 			}
 				enquiryLock.wait();
 			}

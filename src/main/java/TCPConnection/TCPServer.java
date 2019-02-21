@@ -14,7 +14,7 @@ public class TCPServer {
     private ServerSocket server;
     private Socket client;
     private Thread mReadThread;
-    private PrintWriter writer;
+    private PrintWriter writer; //writes to DB
     private SPPClient mPhoneClient;
 
     /**
@@ -45,7 +45,7 @@ public class TCPServer {
             mReadThread.setPriority(Thread.MAX_PRIORITY);
             mReadThread.start();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error: " + e);
             sendDataDB(e.toString());
         }
