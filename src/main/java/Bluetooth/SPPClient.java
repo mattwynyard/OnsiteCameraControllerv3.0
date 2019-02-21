@@ -98,15 +98,14 @@ public class SPPClient extends Thread {
         @Override
         public void run() {
             try {
+
                 String buffer;
-                System.out.println("Reading From Server"); 
+                System.out.println("Reading From Server");
                 in = mStreamConnection.openInputStream();
                 reader = new BufferedReader(new InputStreamReader(in));
-                BufferedInputStream bufReader = new BufferedInputStream(in);
-
                 while ((buffer=reader.readLine())!=null) {
 
-                    System.out.println("And: " + buffer);
+                    //System.out.println("And: " + buffer);
                     if (buffer.contains("NOTRECORDING")) {
                         CameraApp.setRecording(false);
                         mTCP.sendDataDB(buffer);
@@ -122,21 +121,21 @@ public class SPPClient extends Thread {
                             CameraApp.setStatus("NOTCONNECTED");
                             CameraApp.setRecording(false);
                         }
-                    } else if (buffer.contains("R:")) {
+//                    } else if (buffer.contains("R:")) {
+//                        mTCP.sendDataDB(buffer);
+//                        //CameraApp.setPhotoLabel(buffer.substring(12));
+                    } else if (buffer.contains("B:")) {
                         mTCP.sendDataDB(buffer);
-                        //CameraApp.setPhotoLabel(buffer.substring(12));
-//                    } else if (buffer.contains("B:")) {
-//                        mTCP.sendDataDB(buffer);
-//                        //CameraApp.setBatteryLabel(buffer.substring(2));
-//                    } else if (buffer.contains("M:")) {
-//                        mTCP.sendDataDB(buffer);
-//                    } else if (buffer.contains("T:")) {
-//                        mTCP.sendDataDB(buffer);
-//                    } else if (buffer.contains("A:")) {
-//                        mTCP.sendDataDB(buffer);
-//                    } else if (buffer.contains("S:")) {
-//                        mTCP.sendDataDB(buffer);
-//                        //CameraApp.setMemoryLabel(buffer.substring(2));
+                        //CameraApp.setBatteryLabel(buffer.substring(2));
+                    } else if (buffer.contains("M:")) {
+                        mTCP.sendDataDB(buffer);
+                    } else if (buffer.contains("T:")) {
+                        mTCP.sendDataDB(buffer);
+                    } else if (buffer.contains("A:")) {
+                        mTCP.sendDataDB(buffer);
+                    } else if (buffer.contains("S:")) {
+                        mTCP.sendDataDB(buffer);
+                        //CameraApp.setMemoryLabel(buffer.substring(2));
                     } else if (buffer.contains("APP: Crash")){
                         mTCP.sendDataDB(buffer);
                         CameraApp.setRecording(false);
