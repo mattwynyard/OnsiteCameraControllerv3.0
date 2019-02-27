@@ -167,12 +167,17 @@ public class BluetoothManager implements DiscoveryListener {
 		System.out.println("Device discovered: " + btDevice.getBluetoothAddress());
 		//mClient.mTCP.sendData("Device discovered: " + btDevice.getBluetoothAddress());
 		try {
-			if (btDevice.getFriendlyName(false).equals("OnSite_BLT_Adapter")) {
+			if (btDevice.getFriendlyName(false).equals("OnSite_BLT_Adapter") && btDevice.isTrustedDevice()) {
 				System.out.println("Trusted: " + btDevice.isTrustedDevice());
+                System.out.println("Authenticated: " + btDevice.isAuthenticated());
 				connect(btDevice, mAgent, this);
 				mAgent.cancelInquiry(this);
 				mDevices.addElement(btDevice);
-			}
+			} else {
+                System.out.println("Trusted: " + btDevice.isTrustedDevice());
+                System.out.println("Authenticated: " + btDevice.isAuthenticated());
+                mAgent.cancelInquiry(this);
+            }
 		} catch (IOException e) {
 			e.printStackTrace();
 			mClient.mTCP.sendDataDB(e.toString());
