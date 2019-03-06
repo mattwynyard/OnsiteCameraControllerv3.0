@@ -25,6 +25,7 @@ public class BluetoothManager implements DiscoveryListener {
 	private LocalDevice mLocalDevice;
 	private RemoteDevice mRemoteDevice;
 	private DiscoveryAgent mAgent;
+	private String camera;
 	final Object lock = new Object();
 	final Object enquiryLock = new Object();
 	final Object searchLock = new Object();
@@ -39,11 +40,12 @@ public class BluetoothManager implements DiscoveryListener {
 	/**
 	 * Class constructor for Bluetooth manager
 	 */
-	public BluetoothManager() {
+	public BluetoothManager(String camera) {
 		
 		try {	
 			this.mLocalDevice = LocalDevice.getLocalDevice();
 			mDevices.clear();
+			this.camera = camera;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -102,6 +104,7 @@ public class BluetoothManager implements DiscoveryListener {
 			mAgent.cancelInquiry(this);
 		} else {
 			//print bluetooth device addresses and names in the format [ No. address (name) ]
+            System.out.println("Device count: " + deviceCount);
 			System.out.println("Bluetooth Devices: ");
 			for (int i = 0; i < deviceCount; i++) {
 				mRemoteDevice = mDevices.elementAt(i);
@@ -165,19 +168,25 @@ public class BluetoothManager implements DiscoveryListener {
 //			discoverLock.notifyAll();
 //		}
 		System.out.println("Device discovered: " + btDevice.getBluetoothAddress());
-		//mClient.mTCP.sendData("Device discovered: " + btDevice.getBluetoothAddress());
+        try {
+            System.out.println("Device discovered: " + btDevice.getFriendlyName(false));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //mClient.mTCP.sendData("Device discovered: " + btDevice.getBluetoothAddress());
 		try {
-			if (btDevice.getFriendlyName(false).equals("OnSite_BLT_Adapter") && btDevice.isTrustedDevice()) {
-				System.out.println("Trusted: " + btDevice.isTrustedDevice());
-                System.out.println("Authenticated: " + btDevice.isAuthenticated());
-				connect(btDevice, mAgent, this);
-				mAgent.cancelInquiry(this);
-				mDevices.addElement(btDevice);
-			} else {
+			if (btDevice.getFriendlyName(false).equals("OnSite_BLT_Adapter_" + camera)) {
                 System.out.println("Trusted: " + btDevice.isTrustedDevice());
                 System.out.println("Authenticated: " + btDevice.isAuthenticated());
+                connect(btDevice, mAgent, this);
                 mAgent.cancelInquiry(this);
+                mDevices.addElement(btDevice);
             }
+//			} else {
+//                System.out.println("Trusted: " + btDevice.isTrustedDevice());
+//                System.out.println("Authenticated: " + btDevice.isAuthenticated());
+//                mAgent.cancelInquiry(this);
+//            }
 		} catch (IOException e) {
 			e.printStackTrace();
 			mClient.mTCP.sendDataDB(e.toString());
