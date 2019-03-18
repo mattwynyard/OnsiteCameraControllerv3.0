@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_onsite-camera-app" default="compile.module.onsite-camera-app">
+  <dirname property="module.onsite-camera-app.basedir" file="${ant.file.module_onsite-camera-app}"/>
+  
+  <property name="module.jdk.home.onsite-camera-app" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.onsite-camera-app" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.onsite-camera-app" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.onsite-camera-app" value="-encoding UTF-8 -source 6 -target 6 ${compiler.args}"/>
+  
+  <property name="onsite-camera-app.output.dir" value="${module.onsite-camera-app.basedir}/target/classes"/>
+  <property name="onsite-camera-app.testoutput.dir" value="${module.onsite-camera-app.basedir}/target/test-classes"/>
+  
+  <path id="onsite-camera-app.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="onsite-camera-app.module.production.classpath">
+    <path refid="${module.jdk.classpath.onsite-camera-app}"/>
+    <pathelement location="${basedir}/lib/bluecove-2.1.1.jar"/>
+  </path>
+  
+  <path id="onsite-camera-app.runtime.production.module.classpath">
+    <pathelement location="${onsite-camera-app.output.dir}"/>
+    <pathelement location="${basedir}/lib/bluecove-2.1.1.jar"/>
+  </path>
+  
+  <path id="onsite-camera-app.module.classpath">
+    <path refid="${module.jdk.classpath.onsite-camera-app}"/>
+    <pathelement location="${onsite-camera-app.output.dir}"/>
+    <pathelement location="${basedir}/lib/bluecove-2.1.1.jar"/>
+  </path>
+  
+  <path id="onsite-camera-app.runtime.module.classpath">
+    <pathelement location="${onsite-camera-app.testoutput.dir}"/>
+    <pathelement location="${onsite-camera-app.output.dir}"/>
+    <pathelement location="${basedir}/lib/bluecove-2.1.1.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.onsite-camera-app">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.onsite-camera-app">
+    <patternset refid="excluded.from.module.onsite-camera-app"/>
+  </patternset>
+  
+  <path id="onsite-camera-app.module.sourcepath">
+    <dirset dir="${module.onsite-camera-app.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="onsite-camera-app.module.test.sourcepath">
+    <dirset dir="${module.onsite-camera-app.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.onsite-camera-app" depends="compile.module.onsite-camera-app.production,compile.module.onsite-camera-app.tests" description="Compile module onsite-camera-app"/>
+  
+  <target name="compile.module.onsite-camera-app.production" depends="register.custom.compilers" description="Compile module onsite-camera-app; production classes">
+    <mkdir dir="${onsite-camera-app.output.dir}"/>
+    <javac2 destdir="${onsite-camera-app.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.onsite-camera-app}/javac">
+      <compilerarg line="${compiler.args.onsite-camera-app}"/>
+      <bootclasspath refid="onsite-camera-app.module.bootclasspath"/>
+      <classpath refid="onsite-camera-app.module.production.classpath"/>
+      <src refid="onsite-camera-app.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.onsite-camera-app"/>
+    </javac2>
+    
+    <copy todir="${onsite-camera-app.output.dir}">
+      <fileset dir="${module.onsite-camera-app.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.onsite-camera-app.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.onsite-camera-app.tests" depends="register.custom.compilers,compile.module.onsite-camera-app.production" description="compile module onsite-camera-app; test classes" unless="skip.tests">
+    <mkdir dir="${onsite-camera-app.testoutput.dir}"/>
+    <javac2 destdir="${onsite-camera-app.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.onsite-camera-app}/javac">
+      <compilerarg line="${compiler.args.onsite-camera-app}"/>
+      <bootclasspath refid="onsite-camera-app.module.bootclasspath"/>
+      <classpath refid="onsite-camera-app.module.classpath"/>
+      <src refid="onsite-camera-app.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.onsite-camera-app"/>
+    </javac2>
+    
+    <copy todir="${onsite-camera-app.testoutput.dir}">
+      <fileset dir="${module.onsite-camera-app.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.onsite-camera-app" description="cleanup module">
+    <delete dir="${onsite-camera-app.output.dir}"/>
+    <delete dir="${onsite-camera-app.testoutput.dir}"/>
+  </target>
+</project>
