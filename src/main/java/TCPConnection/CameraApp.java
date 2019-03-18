@@ -7,10 +7,14 @@
 package TCPConnection;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.JLabel;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -60,6 +64,7 @@ public class CameraApp {
 //    private static boolean DEBUG = true;
 //    private static String mode;
     private static BluetoothManager mBluetooth;
+    private static int count = 0;
     //private static TCPServer mTCP;
 
     private static Runnable ShutdownHook = new Runnable() {
@@ -115,6 +120,33 @@ public class CameraApp {
 
         }
     }
+
+    public static void setIcon(byte[] bytes, String name) {
+
+        int length = bytes.length;
+        //System.out.println("Bytes received " + length);
+        try {
+            InputStream in = new ByteArrayInputStream(bytes);
+
+            final BufferedImage bufferedImage = ImageIO.read(in);
+            String suffix;
+            if (count % 2 == 0) {
+                suffix = Integer.toString(0);
+            } else {
+                suffix = Integer.toString(1);
+            }
+            final File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
+            //icon = new ImageIcon(bufferedImage);
+            //imageLabel.setIcon(icon);
+
+            ImageIO.write(bufferedImage, "jpg", imageFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        count++;
+
+    }
+
 
 
     public static void setConnected(boolean state) {
