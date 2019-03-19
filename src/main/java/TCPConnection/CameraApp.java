@@ -84,27 +84,6 @@ public class CameraApp {
     public static void main(String[] args) {
 
         System.out.println(args[0]);
-//        Connection con = null;
-//        System.out.println("Hello");
-//            try {
-//                Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-//                con = DriverManager.getConnection("jdbc:odbc:driver={Microsoft Access Driver(*.mdb, *.mde, *.accdb)" +
-//                        "};DBQ=C:\\androidapp\\Access\\Controller_TEST_v1.0.accdb");
-//                //Statement st = con.createStatement();
-//                if (con != null) {
-//                    System.out.println(con.getClientInfo().toString());
-//                    Statement stmt = con.createStatement();
-//                    stmt.execute("select * from Camera");
-//                    ResultSet rs = stmt.getResultSet();
-//                    System.out.println("Camera: " + rs.getString("Camera"));
-//
-//                } else {
-//                    System.out.println("Connection null");
-//                }
-//
-//            } catch (Exception ex){
-//                System.out.println(ex.getMessage());
-//            }
 
         mBluetooth = new BluetoothManager(args[0]);
         mBluetooth.start();
