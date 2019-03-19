@@ -106,14 +106,11 @@ public class SPPClient extends Thread {
             try {
                 System.out.println("Reading From Server");
                 in = mStreamConnection.openInputStream();
-                //reader = new BufferedReader(new InputStreamReader(in));
                 byte[] buffer = new byte[1024];
                 int offset = 0;
                 int dataOffset = 0;
-                //ByteArrayInputStream byteIn = new ByteArrayInputStream()
                 byteOut = new ByteArrayOutputStream();
                 ByteArrayOutputStream photoOut = new ByteArrayOutputStream();
-                //ByteArrayInputStream byteIn = new ByteArrayInputStream();
                 int len = 0;
                 boolean metadata = false; //receiving photo metadata
                 boolean photodata = false; //receiving photo metadata
@@ -121,12 +118,9 @@ public class SPPClient extends Thread {
                 int bytesReceived = 0;
                 int cursor = 0;
                 String photoName = "";
-                //while((len = in.read(buffer, offset, buffer.length)) != -1) {
                 while ((len = in.read(buffer)) != -1) {
 
                     System.out.println("bytes received: " + len);
-
-                    //System.out.println(new String(byteOut.toByteArray(), "UTF-8"));
                     byteOut.write(buffer, 0, 2);
                     if (new String(byteOut.toByteArray(), "UTF-8").equals("P:")) {
                         metadata = true;
@@ -137,7 +131,6 @@ public class SPPClient extends Thread {
                         byteOut.write(buffer, offset, 4);
                         offset += 4;
                         int messageSize = new BigInteger(byteOut.toByteArray()).intValue();
-                        //System.out.println("Message size: " + messageSize);
                         byteOut.reset();
 
                         //message
