@@ -120,87 +120,90 @@ public class SPPClient extends Thread {
                 String photoName = "";
                 while ((len = in.read(buffer)) != -1) {
 
-                    //System.out.println("bytes received: " + len);
-                    byteOut.write(buffer, 0, 2);
-                    if (new String(byteOut.toByteArray(), "UTF-8").equals("P:")) {
-                        metadata = true;
-                    }
-                    if (metadata) {
-                        //message length
-                        offset += 2;
-                        byteOut.write(buffer, offset, 4);
-                        offset += 4;
-                        int messageSize = new BigInteger(byteOut.toByteArray()).intValue();
-                        byteOut.reset();
+                    try {
+                        //System.out.println("bytes received: " + len);
+                        byteOut.write(buffer, 0, 2);
+                        if (new String(byteOut.toByteArray(), "UTF-8").equals("P:")) {
+                            metadata = true;
+                        }
+                        if (metadata) {
+                            //message length
+                            offset += 2;
+                            byteOut.write(buffer, offset, 4);
+                            offset += 4;
+                            int messageSize = new BigInteger(byteOut.toByteArray()).intValue();
+                            byteOut.reset();
 
-                        //message
-                        byteOut.write(buffer, 6, messageSize);
-                        String message = new String(byteOut.toByteArray(), "UTF-8");
-                        mTCP.sendDataDB(message);
-//                        Exception in thread "Thread-2" java.lang.StringIndexOutOfBoundsException: String index out of range: 43
-//                        at java.lang.String.substring(Unknown Source)
-//                        at Bluetooth.SPPClient$1.run(SPPClient.java:147)
-//                        at java.lang.Thread.run(Unknown Source)
-                        photoName = message.substring(22, 43);
-                        //System.out.println(photoName);
-                        byteOut.reset();
-                        offset += messageSize;
+                            //message
+                            byteOut.write(buffer, 6, messageSize);
+                            String message = new String(byteOut.toByteArray(), "UTF-8");
+                            mTCP.sendDataDB(message);
+                            //                        Exception in thread "Thread-2" java.lang.StringIndexOutOfBoundsException: String index out of range: 43
+                            //                        at java.lang.String.substring(Unknown Source)
+                            //                        at Bluetooth.SPPClient$1.run(SPPClient.java:147)
+                            //                        at java.lang.Thread.run(Unknown Source)
+                            photoName = message.substring(22, 43);
+                            //System.out.println(photoName);
+                            byteOut.reset();
+                            offset += messageSize;
 
-                        //photo length
-                        byteOut.write(buffer, offset, 4);
-                        int photoSize = new BigInteger(byteOut.toByteArray()).intValue();
-                        //System.out.println("Photo size: " + photoSize);
-                        offset += 4;
-                        byteOut.reset();
+                            //photo length
+                            byteOut.write(buffer, offset, 4);
+                            int photoSize = new BigInteger(byteOut.toByteArray()).intValue();
+                            //System.out.println("Photo size: " + photoSize);
+                            offset += 4;
+                            byteOut.reset();
 
-                        totalBytes = 2 + 4 + messageSize + 4 + photoSize;
-                        //System.out.println("Total bytes: " + totalBytes);
-                        photodata = true;
-                        metadata = false;
-                        //Start reading first part of photo
-                        photoOut.write(buffer, offset, len - offset);
-                        //System.out.println("Byte array size: " + photoOut.size())
-                        offset += (len - offset);
-                        bytesReceived = 0;
-                        bytesReceived += offset;
-                    } else if (photodata) {
-                        //start reading photo
-                        //System.out.println("Data offset " + offset);
-                        //System.out.println("Data Read: " + len);
-                        bytesReceived += len;
-                        photoOut.write(buffer, 0, len);
-                        //System.out.println("Byte array size: " + photoOut.size());
+                            totalBytes = 2 + 4 + messageSize + 4 + photoSize;
+                            //System.out.println("Total bytes: " + totalBytes);
+                            photodata = true;
+                            metadata = false;
+                            //Start reading first part of photo
+                            photoOut.write(buffer, offset, len - offset);
+                            //System.out.println("Byte array size: " + photoOut.size())
+                            offset += (len - offset);
+                            bytesReceived = 0;
+                            bytesReceived += offset;
+                        } else if (photodata) {
+                            //start reading photo
+                            //System.out.println("Data offset " + offset);
+                            //System.out.println("Data Read: " + len);
+                            bytesReceived += len;
+                            photoOut.write(buffer, 0, len);
+                            //System.out.println("Byte array size: " + photoOut.size());
 
 
-                    } else { //handle message only
-                        byteOut.reset();
-                        byteOut.write(buffer, 2, len - 2);
-                        String message = new String(byteOut.toByteArray(), "UTF-8");
-                        //System.out.println("Message only:"  + message);
-                        mTCP.sendDataDB(message);
-                        byteOut.reset();
-                        buffer = clearBuffer();
-                        offset = 0;
-                    }
-                    if (bytesReceived >= totalBytes) {
-                        byte photo [] = photoOut.toByteArray();
+                        } else { //handle message only
+                            byteOut.reset();
+                            byteOut.write(buffer, 2, len - 2);
+                            String message = new String(byteOut.toByteArray(), "UTF-8");
+                            //System.out.println("Message only:"  + message);
+                            mTCP.sendDataDB(message);
+                            byteOut.reset();
+                            buffer = clearBuffer();
+                            offset = 0;
+                        }
+                        if (bytesReceived >= totalBytes) {
 
-                        byteOut.reset();
-                        photoOut.reset();
-                        CameraApp.setIcon(photo, photoName);
-                        bytesReceived = 0;
-                        metadata = false;
-                        photodata = false;
-                        offset = 0;
+                            System.out.println("Expected bytes: " + totalBytes);
+                            System.out.println("Bytes read: " + bytesReceived);
+
+                            byte photo[] = photoOut.toByteArray();
+
+                            byteOut.reset();
+                            photoOut.reset();
+                            CameraApp.setIcon(photo, photoName);
+                            bytesReceived = 0;
+                            metadata = false;
+                            photodata = false;
+                            offset = 0;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 in.close();
-            } catch (IOException e) {
-                try {
-                    in.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
+            } catch (IOException  e) {
                 e.printStackTrace();
             }
 
