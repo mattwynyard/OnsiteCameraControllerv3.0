@@ -137,6 +137,10 @@ public class SPPClient extends Thread {
                         byteOut.write(buffer, 6, messageSize);
                         String message = new String(byteOut.toByteArray(), "UTF-8");
                         mTCP.sendDataDB(message);
+//                        Exception in thread "Thread-2" java.lang.StringIndexOutOfBoundsException: String index out of range: 43
+//                        at java.lang.String.substring(Unknown Source)
+//                        at Bluetooth.SPPClient$1.run(SPPClient.java:147)
+//                        at java.lang.Thread.run(Unknown Source)
                         photoName = message.substring(22, 43);
                         //System.out.println(photoName);
                         byteOut.reset();
