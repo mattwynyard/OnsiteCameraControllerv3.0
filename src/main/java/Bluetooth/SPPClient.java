@@ -148,7 +148,7 @@ public class SPPClient extends Thread {
 
                         //photo length
                         byteOut.write(buffer, offset, 4);
-                        int photoSize = new BigInteger(byteOut.toByteArray()).intValue();
+                        int photoSize = new BigInteger(byteOut.toByteArray()).intValue(); //line 147
                         //System.out.println("Photo size: " + photoSize);
                         offset += 4;
                         byteOut.reset();
