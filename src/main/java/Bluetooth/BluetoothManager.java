@@ -130,8 +130,6 @@ public class BluetoothManager implements DiscoveryListener {
         uuidSet[0]=new UUID("0003000000001000800000805F9B34FB", false);
         int[] attrIds = { 0x0003 }; //RFCOMM
         System.out.println("\nSearching for service...");
-        //CameraApp.setStatus("SEARCHING");
-		//mClient.mTCP.sendData("Searching");
         try {
         	synchronized(searchLock) {
 
@@ -141,17 +139,12 @@ public class BluetoothManager implements DiscoveryListener {
         	}
 		} catch (BluetoothStateException e) {
 			e.printStackTrace();
-			//mClient.mTCP.sendDataDB(e.toString());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			//mClient.mTCP.sendDataDB(e.toString());
 		}
 		if(connectionURL == null){
 			System.out.println("Device does not support Simple SPP Service.");
-			//mClient.mTCP.sendDataDB("Device does not support Simple SPP Service");
-			//CameraApp.setStatus("NOTCONNECTED");
-			//mClient.mTCP.sendDataDB("Bluetooth not connected");
-			//System.exit(0);
+
 		}
 	}
 
@@ -164,16 +157,13 @@ public class BluetoothManager implements DiscoveryListener {
 	 * 
 	 */
 	public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
-//		synchronized (discoverLock) {
-//			discoverLock.notifyAll();
-//		}
+
 		System.out.println("Device discovered: " + btDevice.getBluetoothAddress());
         try {
             System.out.println("Device discovered: " + btDevice.getFriendlyName(false));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //mClient.mTCP.sendData("Device discovered: " + btDevice.getBluetoothAddress());
 		try {
 			if (btDevice.getFriendlyName(false).equals("OnSite_BLT_Adapter_" + camera)) {
                 System.out.println("Trusted: " + btDevice.isTrustedDevice());

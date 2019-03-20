@@ -23,7 +23,7 @@ import java.sql.*;
 
 /**
  * Main application class for CameraApp
- * Builds user interface and intialises a bluetooth connection to Android App via the custom class Bluetooth Manager
+ * Intialiases bluetooth adapter with camera id and handles the image build.
  *
  *
  */
@@ -50,6 +50,11 @@ public class CameraApp {
 
     };
 
+    /**
+     * Main program entry point - takes an arguement sent from access which is the camera id,
+     * to setup bluetooth adapter name
+     * @param args
+     */
     public static void main(String[] args) {
 
         System.out.println(args[0]);
@@ -68,10 +73,13 @@ public class CameraApp {
         }
     }
 
+    /**
+     * Reads in byte array to input stream to build a buffered image, then writes jpeg image to disk
+     * @param bytes - byte array containing pixel data for the image
+     * @param name - the photo name
+     */
     public static void setIcon(byte[] bytes, String name) {
 
-        int length = bytes.length;
-        //System.out.println("Bytes received " + length);
         try {
             InputStream in = new ByteArrayInputStream(bytes);
 
@@ -83,9 +91,6 @@ public class CameraApp {
                 suffix = Integer.toString(1);
             }
             final File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
-            //icon = new ImageIcon(bufferedImage);
-            //imageLabel.setIcon(icon);
-
             ImageIO.write(bufferedImage, "jpg", imageFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -94,15 +99,15 @@ public class CameraApp {
 
     }
 
-    public static void setConnected(boolean state) {
-        connected = state;
-    }
-
-    public synchronized static void setStatus(String state) {
-        status = state;
-    }
-
-    public synchronized static void setRecording(boolean state) {
-        recording = state;
-    }
+//    public static void setConnected(boolean state) {
+//        connected = state;
+//    }
+//
+//    public synchronized static void setStatus(String state) {
+//        status = state;
+//    }
+//
+//    public synchronized static void setRecording(boolean state) {
+//        recording = state;
+//    }
 }

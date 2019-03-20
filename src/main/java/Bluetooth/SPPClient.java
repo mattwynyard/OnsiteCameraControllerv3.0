@@ -120,7 +120,7 @@ public class SPPClient extends Thread {
                 String photoName = "";
                 while ((len = in.read(buffer)) != -1) {
 
-                    System.out.println("bytes received: " + len);
+                    //System.out.println("bytes received: " + len);
                     byteOut.write(buffer, 0, 2);
                     if (new String(byteOut.toByteArray(), "UTF-8").equals("P:")) {
                         metadata = true;
@@ -153,6 +153,7 @@ public class SPPClient extends Thread {
                         //System.out.println("Total bytes: " + totalBytes);
                         photodata = true;
                         metadata = false;
+                        //Start reading first part of photo
                         photoOut.write(buffer, offset, len - offset);
                         //System.out.println("Byte array size: " + photoOut.size())
                         offset += (len - offset);
