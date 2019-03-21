@@ -129,6 +129,10 @@ public class SPPClient extends Thread {
                         if (metadata) {
                             //message length
                             offset += 2;
+                        //                            java.lang.IndexOutOfBoundsException
+//                            at java.io.ByteArrayOutputStream.write(ByteArrayOutputStream.java:151)
+//                            at Bluetooth.SPPClient$1.run(SPPClient.java:132)
+//                            at java.lang.Thread.run(Thread.java:748)
                             byteOut.write(buffer, offset, 4);
                             offset += 4;
                             int messageSize = new BigInteger(byteOut.toByteArray()).intValue();
@@ -200,6 +204,13 @@ public class SPPClient extends Thread {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        System.out.println("Error: reseting reader");
+                        byteOut.reset();
+                        photoOut.reset();
+                        bytesReceived = 0;
+                        metadata = false;
+                        photodata = false;
+                        offset = 0;
                     }
                 }
                 in.close();

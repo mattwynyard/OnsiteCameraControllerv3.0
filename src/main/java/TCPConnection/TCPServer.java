@@ -55,7 +55,7 @@ public class TCPServer {
      *
      * @param message - the message to be sent.
      */
-    public void sendDataDB(String message) {
+    public synchronized void sendDataDB(String message) {
         System.out.println(message);
         writer.print(message);
         writer.flush();
