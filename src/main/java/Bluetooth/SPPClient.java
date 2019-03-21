@@ -28,8 +28,11 @@ public class SPPClient extends Thread {
     private Thread mReadThread;
     private ByteArrayOutputStream byteOut;
 
-	
-	public SPPClient(String connectionURL) {
+    private FileWriter fw;
+    private BufferedWriter bw;
+
+
+    public SPPClient(String connectionURL) {
 		this.connectionURL = connectionURL;
         try {
 			mStreamConnection = (StreamConnection) Connector.open(connectionURL);
@@ -97,6 +100,30 @@ public class SPPClient extends Thread {
         return new byte[1024];
     }
 
+    private void writeLog(String message, int bytesReceived, int totalBytes) {
+
+	    try {
+	        fw = new FileWriter("C:\\Road Inspection\\Log\\Log.txt", true);
+            bw = new BufferedWriter(fw);
+            bw.write(message + "|" + Integer.toString(bytesReceived) + "|" +Integer.toString(totalBytes));
+            bw.newLine();
+            bw.flush();
+        } catch (IOException e) {
+	        e.printStackTrace();
+        }
+    }
+
+    private void writeLog(Exception error) {
+        try {
+            fw = new FileWriter("C:\\Road Inspection\\Log\\Log.txt", true);
+            bw = new BufferedWriter(fw);
+            bw.write(error.getMessage() + "|" + error.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 	/**
      * Runnable that will read from the server (Android phone) on a thread
      */
@@ -106,7 +133,7 @@ public class SPPClient extends Thread {
             try {
                 System.out.println("Reading From Server");
                 in = mStreamConnection.openInputStream();
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[2048];
                 int offset = 0;
                 int dataOffset = 0;
                 byteOut = new ByteArrayOutputStream();
@@ -115,10 +142,17 @@ public class SPPClient extends Thread {
                 boolean metadata = false; //receiving photo metadata
                 boolean photodata = false; //receiving photo metadata
                 int totalBytes = 9999999;
-                int bytesReceived = 0;
+                int bytesReceived = -1;
                 int cursor = 0;
                 String photoName = "";
+                String message = "";
+                int messageSize;
+
                 while ((len = in.read(buffer)) != -1) {
+
+                    if (len > 990) {
+                        System.out.println("buffer length: " + len);
+                    }
 
                     try {
                         //System.out.println("bytes received: " + len);
@@ -131,12 +165,12 @@ public class SPPClient extends Thread {
                             offset += 2;
                             byteOut.write(buffer, offset, 4);
                             offset += 4;
-                            int messageSize = new BigInteger(byteOut.toByteArray()).intValue();
+                            messageSize = new BigInteger(byteOut.toByteArray()).intValue();
                             byteOut.reset();
 
                             //message
                             byteOut.write(buffer, 6, messageSize);
-                            String message = new String(byteOut.toByteArray(), "UTF-8");
+                            message = new String(byteOut.toByteArray(), "UTF-8");
                             mTCP.sendDataDB(message);
                             //                        Exception in thread "Thread-2" java.lang.StringIndexOutOfBoundsException: String index out of range: 43
                             //                        at java.lang.String.substring(Unknown Source)
@@ -176,23 +210,24 @@ public class SPPClient extends Thread {
                         } else { //handle message only
                             byteOut.reset();
                             byteOut.write(buffer, 2, len - 2);
-                            String message = new String(byteOut.toByteArray(), "UTF-8");
+                            message = new String(byteOut.toByteArray(), "UTF-8");
                             //System.out.println("Message only:"  + message);
+                            totalBytes = 2 + byteOut.size();
+                            bytesReceived = len;
                             mTCP.sendDataDB(message);
                             byteOut.reset();
                             buffer = clearBuffer();
                             offset = 0;
                         }
-                        if (bytesReceived >= totalBytes) {
-
+                        if ((bytesReceived >= totalBytes) && photodata) {
                             System.out.println("Expected bytes: " + totalBytes);
                             System.out.println("Bytes read: " + bytesReceived);
-
                             byte photo[] = photoOut.toByteArray();
 
                             byteOut.reset();
                             photoOut.reset();
                             CameraApp.setIcon(photo, photoName);
+                            writeLog(message, bytesReceived, totalBytes);
                             bytesReceived = 0;
                             metadata = false;
                             photodata = false;
@@ -200,6 +235,7 @@ public class SPPClient extends Thread {
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        writeLog(e);
                     }
                 }
                 in.close();
