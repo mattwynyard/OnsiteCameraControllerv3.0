@@ -84,12 +84,6 @@ public class CameraApp {
             InputStream in = new ByteArrayInputStream(bytes);
 
             final BufferedImage bufferedImage = ImageIO.read(in);
-            String suffix;
-            if (count % 2 == 0) {
-                suffix = Integer.toString(0);
-            } else {
-                suffix = Integer.toString(1);
-            }
             final File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
             ImageIO.write(bufferedImage, "jpg", imageFile);
         } catch (IOException e) {
