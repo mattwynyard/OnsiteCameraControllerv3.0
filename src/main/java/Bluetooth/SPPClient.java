@@ -133,26 +133,44 @@ public class SPPClient extends Thread {
     }
 
     private String decodeIntToString(byte[] buffer, int offset) {
-        mMessageOut.write(buffer, offset, 4);
-        int value = new BigInteger(mMessageOut.toByteArray()).intValue();
+        ByteArrayOutputStream temp = new ByteArrayOutputStream();
+        temp.write(buffer, offset, 4);
+        int value = new BigInteger(temp.toByteArray()).intValue();
+        try {
+            temp.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
         return String.valueOf(value);
     }
 
     private int decodeInteger(byte[] buffer, int offset) {
-        mMessageOut.write(buffer, offset, 4);
-        int value = new BigInteger(mMessageOut.toByteArray()).intValue();
+        ByteArrayOutputStream temp = new ByteArrayOutputStream();
+        temp.write(buffer, offset, 4);
+        int value = new BigInteger(temp.toByteArray()).intValue();
+        try {
+            temp.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
         return value;
 
     }
 
     private String decodeString(byte[] buffer, int offset, int length) {
-        mMessageOut.reset();
-        mMessageOut.write(buffer, offset, length);
         String message = null;
+        ByteArrayOutputStream temp = new ByteArrayOutputStream();
+        temp.write(buffer, offset, length);
+        //String message = null;
         try {
-            message = new String(mMessageOut.toByteArray(), "UTF-8");
+            message = new String(temp.toByteArray(), "UTF-8");
             //System.out.println("message: " + message);
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            temp.close();
+        }catch (IOException e) {
             e.printStackTrace();
         }
         return message;
@@ -178,22 +196,24 @@ public class SPPClient extends Thread {
         String recording = decodeString(buffer, 0, 1);
         String battery = decodeIntToString(buffer, 1);
         String error = decodeIntToString(buffer, 5);
-        String message = decodeString(buffer, 13, messageSize);
+        String message = decodeString(buffer, 9, messageSize);
         if (recording.equals("R")) {
             mTCP.sendDataDB("RECORDING,");
         } else {
             mTCP.sendDataDB("NOTRECORDING,");
         }
 
-        mTCP.sendDataDB(battery);
-        mTCP.sendDataDB(error);
+        mTCP.sendDataDB("B:" + battery);
+        mTCP.sendDataDB("E:" + error);
         mTCP.sendDataDB(message);
+        mMessageOut.reset();
 
     }
 
     private void buildMessage(int length, byte[] b) {
-
-        if (length == mMessageOut.size()) {
+        int size = mMessageOut.size();
+        System.out.println("mout size : " + b.length);
+        if (length == size) {
             sendMessage(mMessageOut.toByteArray());
             mMessageOut.reset();
             metaBytes = 0;
@@ -202,11 +222,12 @@ public class SPPClient extends Thread {
         } else {
             mMessageOut.write(b, metaBytes, b.length);
             System.out.println("Building message");
-            System.out.println("length" + length);
-            System.out.println("b length: " + b.length);
-            System.out.println("mout size : " + b.length);
+//            System.out.println("length " + length);
+//            System.out.println("b length: " + b.length);
+//            System.out.println("mout size : " + b.length);
+            size = mMessageOut.size();
             metaBytes += b.length;
-            if (length == mMessageOut.size()) {
+            if (length == size) {
                 //send data
                 System.out.println("sending message..");
                 sendMessage(mMessageOut.toByteArray());
@@ -246,14 +267,14 @@ public class SPPClient extends Thread {
 
                     if (metadata) {
                         if (metaBytes == 0) {
-                            ByteArrayOutputStream temp = new ByteArrayOutputStream();
-                            temp.write(buffer, 9, 4);
-                            messageSize = decodeInteger(temp.toByteArray(), 0);
+                            //ByteArrayOutputStream temp = new ByteArrayOutputStream();
+                            //temp.write(buffer, 9, 4);
+                            messageSize = decodeInteger(Arrays.copyOfRange(buffer, 9, 13), 0);
                             int headerSize = 13 + messageSize;
                             System.out.println("Message size: " + messageSize);
                             buildMessage(headerSize, Arrays.copyOfRange(buffer, 0, headerSize));
                             metaBytes += headerSize;
-                            temp.close();
+                            //temp.close();
                         } else {
                             buildMessage(headerSize, Arrays.copyOfRange(buffer, metaBytes, len - (headerSize - metaBytes)));
                         }
@@ -262,9 +283,10 @@ public class SPPClient extends Thread {
                     }
 
                     if (connect.equals("CONNECTED,")) {
-                        System.out.println(decodeString(buffer, 0, 10));
+                        //System.out.println(decodeString(buffer, 0, 10));
                         mTCP.sendDataDB("CONNECTED,");
                         mMessageOut.reset();
+                        buffer = clearBuffer();
                         metadata = true;
                         metaBytes = 0;
                     }
