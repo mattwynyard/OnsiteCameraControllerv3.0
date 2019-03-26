@@ -83,9 +83,10 @@ public class CameraApp {
         try {
             InputStream in = new ByteArrayInputStream(bytes);
 
-            final BufferedImage bufferedImage = ImageIO.read(in);
-            final File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
+            BufferedImage bufferedImage = ImageIO.read(in);
+            File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
             ImageIO.write(bufferedImage, "jpg", imageFile);
+            in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

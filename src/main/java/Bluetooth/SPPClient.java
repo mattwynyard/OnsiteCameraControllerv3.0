@@ -245,44 +245,41 @@ public class SPPClient extends Thread {
             System.out.println("Reading From Server");
             try {
                 in = mStreamConnection.openInputStream();
-
-
                 byte[] buffer = new byte[1024];
-                int offset = 0;
                 mMessageOut = new ByteArrayOutputStream();
                 mPhotoOut = new ByteArrayOutputStream();
                 ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-                int len = 0;
-
-
-                int bytesRead = 0;
-                int bytesLeft = 0;
+                int len;
+                String recording;
+                int battery;
+                int error;
+                String message;
+                String photoName;
                 boolean metadata = true;
-                //String photoName = "";
                 int payloadSize = 0;
                 int messageSize = 0;
                 int photoSize = 0;
 
                 while ((len = in.read(buffer)) != -1) {
-                    System.out.println("buffer length: " + len);
+                    //System.out.println("buffer length: " + len);
 
                     byteBuffer.write(buffer, 0, len); //read in total buffer from socket
 
                     if (metadata == true) {
                         payloadSize = decodeInteger(Arrays.copyOfRange(byteBuffer.toByteArray(), 0, 4), 0);
-                        System.out.println("payload length: " + payloadSize);
+                        //System.out.println("payload length: " + payloadSize);
                     }
                     metadata = false;
-                    System.out.println("byte buffer length: " + byteBuffer.size());
+                    //System.out.println("byte buffer length: " + byteBuffer.size());
 
                     if (byteBuffer.size() >= payloadSize) {
                         messageSize = decodeInteger(Arrays.copyOfRange(byteBuffer.toByteArray(), 4, 8), 0);
                         photoSize = decodeInteger(Arrays.copyOfRange(byteBuffer.toByteArray(), 8, 12), 0);
                         //System.out.println("payload length: " + payloadSize);
-                        System.out.println("message length: " + messageSize);
-                        System.out.println("photo length: " + photoSize);
+                        //System.out.println("message length: " + messageSize);
+                        //System.out.println("photo length: " + photoSize);
                         mMessageOut.write(byteBuffer.toByteArray(), 12, 1);
-                        String recording = new String(mMessageOut.toByteArray(), "UTF-8");
+                        recording = new String(mMessageOut.toByteArray(), "UTF-8");
                         mMessageOut.reset();
                         if (recording.equals("N")) {
                             mTCP.sendDataDB("NOTRECORDING,");
@@ -290,49 +287,68 @@ public class SPPClient extends Thread {
                             mTCP.sendDataDB("RECORDING,");
                         }
                         mMessageOut.write(byteBuffer.toByteArray(), 13, 4);
-                        int battery = decodeInteger(mMessageOut.toByteArray(), 0);
+                        battery = decodeInteger(mMessageOut.toByteArray(), 0);
                         mMessageOut.reset();
                         mTCP.sendDataDB("B:" + Integer.toString(battery) + ",");
                         mMessageOut.write(byteBuffer.toByteArray(), 17, 4);
-                        int error = decodeInteger(mMessageOut.toByteArray(), 0);
+                        error = decodeInteger(mMessageOut.toByteArray(), 0);
                         mMessageOut.reset();
                         mTCP.sendDataDB("E:" + Integer.toString(error) + ",");
                         mMessageOut.write(byteBuffer.toByteArray(), 21, messageSize);
-                        String message = new String(mMessageOut.toByteArray(), "UTF-8");
+                        message = new String(mMessageOut.toByteArray(), "UTF-8");
                         //String photoName = message.substring(22, 43);
                         mMessageOut.reset();
                         mTCP.sendDataDB(message);
 
-                        if (byteBuffer.size() > payloadSize) {
-                            if (photoSize != 0) {
-                                mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
-                                String photoName = message.substring(22, 43);
-                                CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
-                            }
-                            ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
-                            tempBuffer.write(byteBuffer.toByteArray(), payloadSize, byteBuffer.size() - payloadSize);
-                            byteBuffer.reset();
-                            byteBuffer.write(tempBuffer.toByteArray());
-                            metadata = true;
-                        } else {
-                            if (photoSize != 0) {
-                                mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
-                                String photoName = message.substring(22, 43);
-                                CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
+                        try {
+                            if (byteBuffer.size() > payloadSize) {
+                                if (photoSize != 0) {
+                                    mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
+                                    photoName = message.substring(22, 43);
+                                    CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
+                                }
+                                ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
+                                tempBuffer.write(byteBuffer.toByteArray(), payloadSize, byteBuffer.size() - payloadSize);
                                 byteBuffer.reset();
+                                byteBuffer.write(tempBuffer.toByteArray());
                                 metadata = true;
+                                tempBuffer.close();
                             } else {
-                                byteBuffer.reset();
-                                metadata = true;
+                                if (photoSize != 0) {
+                                    mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
+                                    photoName = message.substring(22, 43);
+                                    CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
+                                    byteBuffer.reset();
+                                    mPhotoOut.reset();
+                                    metadata = true;
+                                } else {
+                                    byteBuffer.reset();
+                                    metadata = true;
+                                }
+                            }
+                        } catch (OutOfMemoryError e){
+                            e.printStackTrace();
+                            System.out.println("byte buffer length: " + byteBuffer.size());
+                            System.out.println("buffer length: " + len);
+                            System.out.println("payload length: " + payloadSize);
+                            System.out.println("message length: " + messageSize);
+                            System.out.println("photo length: " + photoSize);
+                            System.out.println("meta data: " + metadata);
+                            metadata = true;
+                            byteBuffer.reset();
+                            mTCP.sendDataAndroid("Stop");
+                            mTCP.sendDataDB("NOTRECORDING,");
+                            try {
+                                Thread.sleep(100000000);
+                            } catch (InterruptedException e1) {
+                                e1.printStackTrace();
                             }
                         }
                     }
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     };
 }
