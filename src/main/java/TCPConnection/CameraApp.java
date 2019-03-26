@@ -81,12 +81,15 @@ public class CameraApp {
     public static void setIcon(byte[] bytes, String name) {
 
         try {
+            long start = System.currentTimeMillis();
             InputStream in = new ByteArrayInputStream(bytes);
 
             BufferedImage bufferedImage = ImageIO.read(in);
             File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
             ImageIO.write(bufferedImage, "jpg", imageFile);
             in.close();
+            long end = System.currentTimeMillis();
+            System.out.println("jpeg save time: " + (end - start));
         } catch (IOException e) {
             e.printStackTrace();
         }
