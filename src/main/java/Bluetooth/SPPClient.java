@@ -326,20 +326,7 @@ public class SPPClient extends Thread {
                                     metadata = true;
                                 }
                             }
-//                        } catch (OutOfMemoryError e){
-//                            e.printStackTrace();
-//                            System.out.println("byte buffer length: " + byteBuffer.size());
-//                            System.out.println("buffer length: " + len);
-//                            System.out.println("payload length: " + payloadSize);
-//                            System.out.println("message length: " + messageSize);
-//                            System.out.println("photo length: " + photoSize);
-//                            System.out.println("meta data: " + metadata);
-//                            metadata = true;
-//                            byteBuffer.reset();
-//                            mTCP.sendDataAndroid("Stop");
-//                            mTCP.sendDataDB("NOTRECORDING,");
-
-                        } catch (Exception e){
+                        } catch (OutOfMemoryError e){
                             e.printStackTrace();
                             System.out.println("byte buffer length: " + byteBuffer.size());
                             System.out.println("buffer length: " + len);
@@ -349,6 +336,22 @@ public class SPPClient extends Thread {
                             System.out.println("meta data: " + metadata);
                             metadata = true;
                             byteBuffer.reset();
+                            mTCP.sendDataAndroid("Stop");
+                            mTCP.sendDataDB("NOTRECORDING,");
+
+                        } catch (IndexOutOfBoundsException e){
+                            e.printStackTrace();
+                            System.out.println("byte buffer length: " + byteBuffer.size());
+                            System.out.println("buffer length: " + len);
+                            System.out.println("payload length: " + payloadSize);
+                            System.out.println("message length: " + messageSize);
+                            System.out.println("photo length: " + photoSize);
+                            System.out.println("meta data: " + metadata);
+                            metadata = true;
+                            byteBuffer.reset();
+                            mPhotoOut.reset();
+                            mMessageOut.reset();
+                            buffer = clearBuffer();
                             mTCP.sendDataAndroid("Stop");
                             mTCP.sendDataDB("NOTRECORDING,");
                         }
