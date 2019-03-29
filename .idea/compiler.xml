@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="onsite-camera-app" target="6" />
+      <module name="onsite-camera-app" target="7" />
     </bytecodeTargetLevel>
   </component>
 </project>

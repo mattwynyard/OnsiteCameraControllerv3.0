@@ -6,20 +6,15 @@
 
 package TCPConnection;
 
-import java.awt.*;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
 import Bluetooth.BluetoothManager;
-import java.sql.*;
+
 
 /**
  * Main application class for CameraApp
@@ -62,6 +57,8 @@ public class CameraApp {
         mBluetooth = new BluetoothManager(args[0]);
         mBluetooth.start();
 
+
+
         Runtime.getRuntime().addShutdownHook(new Thread(ShutdownHook));
 
         while(true) {
@@ -85,6 +82,10 @@ public class CameraApp {
             InputStream in = new ByteArrayInputStream(bytes);
 
             BufferedImage bufferedImage = ImageIO.read(in);
+            System.out.println("Length:" + bytes.length);
+            System.out.println("Width:" + bufferedImage.getWidth());
+            System.out.println("Heigth:" + bufferedImage.getHeight());
+
             File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
             ImageIO.write(bufferedImage, "jpg", imageFile);
             in.close();

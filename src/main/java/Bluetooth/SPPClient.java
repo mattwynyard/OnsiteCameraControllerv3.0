@@ -304,6 +304,7 @@ public class SPPClient extends Thread {
                             if (byteBuffer.size() > payloadSize) {
                                 if (photoSize != 0) {
                                     mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
+                                    System.out.println("photoOut: "+ mPhotoOut.size());
                                     photoName = message.substring(22, 43);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
                                 }
@@ -316,6 +317,7 @@ public class SPPClient extends Thread {
                             } else {
                                 if (photoSize != 0) {
                                     mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
+                                    System.out.println("photoOut: "+ mPhotoOut.size());
                                     photoName = message.substring(22, 43);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
                                     byteBuffer.reset();
@@ -336,6 +338,8 @@ public class SPPClient extends Thread {
                             System.out.println("meta data: " + metadata);
                             metadata = true;
                             byteBuffer.reset();
+                            mPhotoOut.reset();
+                            mMessageOut.reset();
                             mTCP.sendDataAndroid("Stop");
                             mTCP.sendDataDB("NOTRECORDING,");
 
