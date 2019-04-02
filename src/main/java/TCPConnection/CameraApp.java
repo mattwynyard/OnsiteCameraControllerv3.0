@@ -82,10 +82,10 @@ public class CameraApp {
             InputStream in = new ByteArrayInputStream(bytes);
 
             BufferedImage bufferedImage = ImageIO.read(in);
-            System.out.println("Length:" + bytes.length);
-            System.out.println("Width:" + bufferedImage.getWidth());
-            System.out.println("Heigth:" + bufferedImage.getHeight());
-
+            //System.out.println("Length:" + bytes.length);
+            //System.out.println("Width:" + bufferedImage.getWidth());
+            //System.out.println("Heigth:" + bufferedImage.getHeight());
+            
             File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
             ImageIO.write(bufferedImage, "jpg", imageFile);
             in.close();
