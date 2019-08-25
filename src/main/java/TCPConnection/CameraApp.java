@@ -31,19 +31,19 @@ public class CameraApp {
     private static int count = 0;
 
 
-    private static Runnable ShutdownHook = new Runnable() {
-        @Override
-        public void run () {
-            if (mBluetooth.mClient != null) {
-                mBluetooth.mClient.mTCP.sendDataDB("NOTRECORDING,");
-                mBluetooth.mClient.mTCP.sendDataDB("NOTCONNECTED,");
-                mBluetooth.mClient.mTCP.sendDataDB("ERROR,");
-                mBluetooth.mClient.mTCP.closeAll();
-                mBluetooth.mClient.closeAll();
-            }
-        }
-
-    };
+//    private static Runnable ShutdownHook = new Runnable() {
+//        @Override
+//        public void run () {
+//            if (mBluetooth.mClient != null) {
+//                mBluetooth.mClient.mTCP.sendDataDB("NOTRECORDING,");
+//                mBluetooth.mClient.mTCP.sendDataDB("NOTCONNECTED,");
+//                mBluetooth.mClient.mTCP.sendDataDB("ERROR,");
+//                mBluetooth.mClient.mTCP.closeAll();
+//                mBluetooth.mClient.closeAll();
+//            }
+//        }
+//
+//    };
 
     /**
      * Main program entry point - takes an arguement sent from access which is the camera id,
@@ -52,14 +52,14 @@ public class CameraApp {
      */
     public static void main(String[] args) {
 
-        System.out.println(args[0]);
+        //System.out.println(args[0]);
 
-        mBluetooth = new BluetoothManager(args[0]);
+        mBluetooth = new BluetoothManager();
         mBluetooth.start();
 
 
 
-        Runtime.getRuntime().addShutdownHook(new Thread(ShutdownHook));
+        //Runtime.getRuntime().addShutdownHook(new Thread(ShutdownHook));
 
         while(true) {
             try {
@@ -84,7 +84,7 @@ public class CameraApp {
             BufferedImage bufferedImage = ImageIO.read(in);
             //System.out.println("Length:" + bytes.length);
             //System.out.println("Width:" + bufferedImage.getWidth());
-            //System.out.println("Heigth:" + bufferedImage.getHeight());
+            //System.out.println("File Saved: " + name);
             
             File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
             ImageIO.write(bufferedImage, "jpg", imageFile);
@@ -95,18 +95,5 @@ public class CameraApp {
             e.printStackTrace();
         }
         count++;
-
     }
-
-//    public static void setConnected(boolean state) {
-//        connected = state;
-//    }
-//
-//    public synchronized static void setStatus(String state) {
-//        status = state;
-//    }
-//
-//    public synchronized static void setRecording(boolean state) {
-//        recording = state;
-//    }
 }

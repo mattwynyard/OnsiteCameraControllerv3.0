@@ -3,28 +3,25 @@ package TCPConnection;
 import java.io.*;
 import java.net.*;
 
-import Bluetooth.SPPClient;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import Bluetooth.SPPServer;
 
 public class TCPServer {
 
     private InputStream in;
     private ServerSocket server;
-    private Socket client;
+    private Socket client; //access socket
     private Thread mReadThread;
     private PrintWriter writer; //writes to DB
-    private SPPClient mPhoneClient;
+    private SPPServer mPhoneServer;
 
     /**
      * TCPServer constructor which creates a new server socket on local host port 38200 then calls start() method
      */
-    public TCPServer(SPPClient client) {
+    public TCPServer() {
         try {
             // create the main server socket
             server = new ServerSocket(38200, 0, InetAddress.getByName(null));
-            mPhoneClient = client;
+            //mPhoneServer = phoneServer;
         } catch (IOException e) {
             System.out.println("Error: " + e);
             return;
@@ -32,13 +29,13 @@ public class TCPServer {
         start();
     }
 
-    public void start() {
+    public TCPServer start() {
 
-        System.out.println("Waiting for connection");
+
         try {
             // wait for a connection
             client = server.accept();
-            System.out.println("Connection, sending data.");
+            System.out.println("\nAccepted TCP connection");
             writer = new PrintWriter(client.getOutputStream());
 
             mReadThread = new Thread(readFromClient);
@@ -49,6 +46,11 @@ public class TCPServer {
             System.out.println("Error: " + e);
             sendDataDB(e.toString());
         }
+        return this;
+    }
+
+    public void setPhoneServer (SPPServer server) {
+        mPhoneServer = server;
     }
 
     /** Sends a message to the client, in this case VBA via C# .dll
@@ -63,7 +65,7 @@ public class TCPServer {
 
     public void sendDataAndroid(String message) {
 
-        mPhoneClient.sendCommand(message);
+        mPhoneServer.sendCommand(message);
 
     }
 
@@ -90,19 +92,23 @@ public class TCPServer {
 
         @Override
         public void run() {
-            System.out.println("Read Thread listening");
+            System.out.println("TCP Read Thread listening");
             int length;
             byte[] buffer = new byte[1024];
             try {
                 in = client.getInputStream();
                 while ((length = in.read(buffer)) != -1) {
                     String line = new String(buffer, 0, length);
+                    //System.out.println(line);
                     if (line.equals("Start")) {
                         sendDataAndroid(line);
+                        //System.out.println(line);
                     } else if (line.equals("Stop")) {
                         sendDataAndroid(line);
-                    } else {
-
+                        //System.out.println(line);
+                    } else if (line.contains("Time")){
+                        sendDataAndroid(line);
+                        //System.out.println(line);
                     }
                 }
                 in.close();

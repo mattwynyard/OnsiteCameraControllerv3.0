@@ -6,11 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="onsite-camera-app" />
+        <module name="OnsiteCameraApp_Maven_Devlopment" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="onsite-camera-app" target="7" />
+      <module name="OnsiteCameraApp_Maven_Devlopment" target="7" />
     </bytecodeTargetLevel>
   </component>
 </project>
