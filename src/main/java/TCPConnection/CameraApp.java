@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+
 import Bluetooth.BluetoothManager;
 
 
@@ -28,6 +30,7 @@ public class CameraApp {
     private static boolean recording = false;
     private static String status;
     private static BluetoothManager mBluetooth;
+    public static int cameras;
     private static int count = 0;
 
 
@@ -52,8 +55,8 @@ public class CameraApp {
      */
     public static void main(String[] args) {
 
-        //System.out.println(args[0]);
-
+        System.out.println(args[0]);
+        cameras = Integer.valueOf(args[0]);
         mBluetooth = new BluetoothManager();
         mBluetooth.start();
 
@@ -80,14 +83,14 @@ public class CameraApp {
         try {
             long start = System.currentTimeMillis();
             InputStream in = new ByteArrayInputStream(bytes);
-
+            //ImageInputStream in = ImageIO.createImageInputStream(bytes);
             BufferedImage bufferedImage = ImageIO.read(in);
             //System.out.println("Length:" + bytes.length);
             //System.out.println("Width:" + bufferedImage.getWidth());
             //System.out.println("File Saved: " + name);
             
             File imageFile = new File("C:\\Road Inspection\\Thumbnails\\" + name + ".jpg");
-            ImageIO.write(bufferedImage, "jpg", imageFile);
+            ImageIO.write(bufferedImage, "JPG", imageFile);
             in.close();
             long end = System.currentTimeMillis();
             System.out.println("jpeg save time: " + (end - start));

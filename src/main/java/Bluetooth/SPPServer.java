@@ -26,6 +26,7 @@ public class SPPServer extends Thread {
     private OutputStream out; //Android out
     private PrintWriter writer; //Android writer
     private TCPServer mTCP;
+
     public SPPServer() {
 
     }
@@ -52,7 +53,7 @@ public class SPPServer extends Thread {
             threadPool = new ArrayList();
             writerPool = new ArrayList();
             int count = 0;
-            while (count < 2) {
+            while (count < CameraApp.cameras) {
                 connection = serverConnection.acceptAndOpen();
                 out = connection.openOutputStream();
                 writer = new PrintWriter(new OutputStreamWriter(out));
@@ -129,7 +130,7 @@ public class SPPServer extends Thread {
         String camera;
         RemoteDevice device;
         String macAddress;
-        InputStream in;
+        InputStream in; //input stream from android
         ByteArrayOutputStream mMessageOut;
         ByteArrayOutputStream mPhotoOut;
         ByteArrayOutputStream byteBuffer;
@@ -197,9 +198,11 @@ public class SPPServer extends Thread {
                         if (message.contains("CONNECTED")) {
                             camera = message.substring(0, 3);
                             message = message.substring(3, messageSize);
+                            System.out.println("Reading From Client: " + camera);
                             //
                         }
                         if (message.contains("NOTCONNECTED")) {
+                            System.out.println("Client: " + camera + " closed connection");
                             closeAll();
                             //
                         }
@@ -221,10 +224,11 @@ public class SPPServer extends Thread {
                             if (byteBuffer.size() > payloadSize) {
                                 if (photoSize != 0) {
                                     mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
-                                    System.out.println("photoOut: " + mPhotoOut.size());
+                                    //System.out.println("photoOut: " + mPhotoOut.size());
                                     //photoName = message.substring(22, 43);
                                     photoName = message.substring(29, 53);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
+                                    //mTCP.sendPhotoDB(mPhotoOut.toByteArray());
                                 }
                                 ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
                                 tempBuffer.write(byteBuffer.toByteArray(), payloadSize, byteBuffer.size() - payloadSize);
@@ -235,10 +239,11 @@ public class SPPServer extends Thread {
                             } else {
                                 if (photoSize != 0) {
                                     mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
-                                    System.out.println("photoOut: " + mPhotoOut.size());
+                                    //System.out.println("photoOut: " + mPhotoOut.size());
                                     //photoName = message.substring(22, 43);
                                     photoName = message.substring(26, 53);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
+                                    //mTCP.sendPhotoDB(mPhotoOut.toByteArray());
                                     byteBuffer.reset();
                                     mPhotoOut.reset();
                                     metadata = true;

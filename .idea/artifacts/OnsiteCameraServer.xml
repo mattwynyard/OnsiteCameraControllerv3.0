@@ -2,7 +2,7 @@
   <artifact type="jar" name="OnsiteCameraServer">
     <output-path>$PROJECT_DIR$/out/artifacts/OnsiteCameraApp_Maven_jar</output-path>
     <root id="archive" name="OnsiteCameraServer.jar">
-      <element id="module-output" name="OnsiteCameraApp_Maven_Devlopment" />
+      <element id="module-output" name="OnsiteControllerv3" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/bluecove-2.1.1.jar" path-in-jar="/" />
     </root>
   </artifact>

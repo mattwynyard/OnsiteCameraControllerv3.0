@@ -50,9 +50,9 @@ public class BluetoothManager extends Thread  {
 	public void run() {
 
 		System.out.println("Local Bluetooth Address: " + mLocalDevice.getBluetoothAddress());
-		System.out.println("Name: " + mLocalDevice.getFriendlyName());
+		System.out.println("Device Name: " + mLocalDevice.getFriendlyName());
 
-        tcpServer = new TCPServer();
+        tcpServer = new TCPServer(38200);
         if (tcpServer != null) {
             SPPServer sppServer = new SPPServer();
             sppServer.start();
