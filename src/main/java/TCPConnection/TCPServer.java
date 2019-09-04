@@ -16,7 +16,7 @@ public class TCPServer {
     private PrintWriter writer; //writes to DB
     //private PrintWriter photoWriter; //writes to DB]
     //private OutputStream photoOut;
-    private SPPServer mPhoneServer;
+    public SPPServer mPhoneServer;
 
     /**
      * TCPServer constructor which creates a new server socket on local host port 38200 then calls start() method

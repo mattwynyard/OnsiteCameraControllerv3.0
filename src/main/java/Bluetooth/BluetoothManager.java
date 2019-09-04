@@ -25,7 +25,8 @@ public class BluetoothManager extends Thread  {
     //vector containing the devices discovered, kept as Vector in case we need to a more remote devices
 	private Vector<RemoteDevice> mDevices = new Vector();
 	private String connectionURL = null;
-    private TCPServer tcpServer;
+    public TCPServer tcpServer;
+    public SPPServer sppServer;
 	private long start;
 	private long stop;
 
@@ -54,7 +55,7 @@ public class BluetoothManager extends Thread  {
 
         tcpServer = new TCPServer(38200);
         if (tcpServer != null) {
-            SPPServer sppServer = new SPPServer();
+            sppServer = new SPPServer();
             sppServer.start();
             tcpServer.setPhoneServer(sppServer);
             sppServer.setTCPServer(tcpServer);

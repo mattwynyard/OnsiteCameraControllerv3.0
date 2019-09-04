@@ -26,6 +26,7 @@ public class SPPServer extends Thread {
     private OutputStream out; //Android out
     private PrintWriter writer; //Android writer
     private TCPServer mTCP;
+    public ReadFromClient clientRead;
 
     public SPPServer() {
 
@@ -67,6 +68,7 @@ public class SPPServer extends Thread {
                 Thread t = new Thread(r);
                 t.start();
                 threadPool.add(t);
+
             }
 
         } catch (IOException e) {
@@ -125,6 +127,18 @@ public class SPPServer extends Thread {
         return message;
     }
 
+    public void closeAll() {
+        clientRead.closeAll();
+        clientRead = null;
+        try {
+            out.close();
+            writer.close();
+        } catch (IOException e){
+
+        }
+
+    }
+
     private class ReadFromClient implements Runnable {
 
         String camera;
@@ -143,9 +157,20 @@ public class SPPServer extends Thread {
         public ReadFromClient(Object device) {
             this.device = (RemoteDevice)device;
             macAddress = this.device.getBluetoothAddress();
+            clientRead = this;
 
         }
-        //private Runnable readFromClient = new Runnable() {
+
+        public void closeAll() {
+            try {
+                in.close();
+                mMessageOut.close();
+                mPhotoOut.close();
+                byteBuffer.close();
+            } catch (IOException e) {
+                //e.printStackTrace();
+            }
+        }
 
         @Override
         public void run() {
@@ -175,9 +200,6 @@ public class SPPServer extends Thread {
                     if (byteBuffer.size() >= payloadSize) {
                         messageSize = decodeInteger(Arrays.copyOfRange(byteBuffer.toByteArray(), 4, 8), 0);
                         photoSize = decodeInteger(Arrays.copyOfRange(byteBuffer.toByteArray(), 8, 12), 0);
-                        //System.out.println("payload length: " + payloadSize);
-                        //System.out.println("message length: " + messageSize);
-                        //System.out.println("photo length: " + photoSize);
                         mMessageOut.write(byteBuffer.toByteArray(), 12, 1);
                         recording = new String(mMessageOut.toByteArray(), "UTF-8");
                         mMessageOut.reset();
@@ -224,8 +246,6 @@ public class SPPServer extends Thread {
                             if (byteBuffer.size() > payloadSize) {
                                 if (photoSize != 0) {
                                     mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
-                                    //System.out.println("photoOut: " + mPhotoOut.size());
-                                    //photoName = message.substring(22, 43);
                                     photoName = message.substring(29, 53);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
                                     //mTCP.sendPhotoDB(mPhotoOut.toByteArray());
@@ -239,8 +259,6 @@ public class SPPServer extends Thread {
                             } else {
                                 if (photoSize != 0) {
                                     mPhotoOut.write(byteBuffer.toByteArray(), 21 + messageSize, photoSize);
-                                    //System.out.println("photoOut: " + mPhotoOut.size());
-                                    //photoName = message.substring(22, 43);
                                     photoName = message.substring(26, 53);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
                                     //mTCP.sendPhotoDB(mPhotoOut.toByteArray());
@@ -299,16 +317,7 @@ public class SPPServer extends Thread {
             }
         }
 
-        private void closeAll() {
-            try {
-                in.close();
-                mMessageOut.close();
-                mPhotoOut.close();
-                byteBuffer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+
     }
 }
 
