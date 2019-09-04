@@ -68,7 +68,7 @@ public class TCPServer {
      * @param message - the message to be sent.
      */
     public synchronized void sendDataDB(String message) {
-        System.out.println(message);
+        System.out.println("Acces:" + message);
         writer.print(message);
         writer.flush();
     }
@@ -126,7 +126,7 @@ public class TCPServer {
                 in = client.getInputStream();
                 while ((length = in.read(buffer)) != -1) {
                     String line = new String(buffer, 0, length);
-                    System.out.println(line);
+                    System.out.println("And:" + line);
                     if (line.equals("Start")) {
                         sendDataAndroid(line);
                         //System.out.println(line);
