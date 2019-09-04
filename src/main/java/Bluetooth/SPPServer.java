@@ -195,9 +195,11 @@ public class SPPServer extends Thread {
                         message = new String(mMessageOut.toByteArray(), "UTF-8");
                         //String photoName = message.substring(22, 43);
                         mMessageOut.reset();
-                        if (message.contains("CONNECTED")) {
-                            camera = message.substring(0, 3);
-                            message = message.substring(3, messageSize);
+                        if (message.contains("CAMERA")) {
+                            camera = message.substring(6, 9);
+
+                            System.out.println("Inital Message: " + message);
+                            message = message.substring(9, messageSize);
                             System.out.println("Reading From Client: " + camera);
                             //
                         }
@@ -216,7 +218,7 @@ public class SPPServer extends Thread {
                             //System.out.println("RECORDING,");
                         }
                         messageSend = camera + "," + "B:" + battery + "," + "E:" + error + "," + recording
-                                + "," + message + "\0";
+                                + "," + message + ",";
                         //System.out.println("java: " + messageSend);
                         mTCP.sendDataDB(messageSend);
 
@@ -299,7 +301,7 @@ public class SPPServer extends Thread {
             }
         }
 
-        private void closeAll() {
+        public void closeAll() {
             try {
                 in.close();
                 mMessageOut.close();

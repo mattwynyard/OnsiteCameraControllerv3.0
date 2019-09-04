@@ -34,19 +34,19 @@ public class CameraApp {
     private static int count = 0;
 
 
-//    private static Runnable ShutdownHook = new Runnable() {
-//        @Override
-//        public void run () {
-//            if (mBluetooth.mClient != null) {
-//                mBluetooth.mClient.mTCP.sendDataDB("NOTRECORDING,");
-//                mBluetooth.mClient.mTCP.sendDataDB("NOTCONNECTED,");
-//                mBluetooth.mClient.mTCP.sendDataDB("ERROR,");
-//                mBluetooth.mClient.mTCP.closeAll();
-//                mBluetooth.mClient.closeAll();
-//            }
-//        }
-//
-//    };
+    private static Runnable ShutdownHook = new Runnable() {
+        @Override
+        public void run () {
+            if (mBluetooth.tcpServer != null) {
+                mBluetooth.tcpServer.sendDataDB("NOTRECORDING,");
+                mBluetooth.tcpServer.sendDataDB("NOTCONNECTED,");
+                mBluetooth.tcpServer.sendDataDB("ERROR,");
+                mBluetooth.sppServer.
+                mBluetooth.tcpServer.closeAll();
+            }
+        }
+
+    };
 
     /**
      * Main program entry point - takes an arguement sent from access which is the camera id,
@@ -55,14 +55,11 @@ public class CameraApp {
      */
     public static void main(String[] args) {
 
-        System.out.println(args[0]);
+        //System.out.println(args[0]);
         cameras = Integer.valueOf(args[0]);
         mBluetooth = new BluetoothManager();
         mBluetooth.start();
-
-
-
-        //Runtime.getRuntime().addShutdownHook(new Thread(ShutdownHook));
+        Runtime.getRuntime().addShutdownHook(new Thread(ShutdownHook));
 
         while(true) {
             try {

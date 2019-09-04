@@ -16,7 +16,7 @@ public class TCPServer {
     private PrintWriter writer; //writes to DB
     //private PrintWriter photoWriter; //writes to DB]
     //private OutputStream photoOut;
-    private SPPServer mPhoneServer;
+    public SPPServer mPhoneServer;
 
     /**
      * TCPServer constructor which creates a new server socket on local host port 38200 then calls start() method
@@ -68,7 +68,7 @@ public class TCPServer {
      * @param message - the message to be sent.
      */
     public synchronized void sendDataDB(String message) {
-        System.out.println("Acces:" + message);
+        System.out.println("Access:" + message);
         writer.print(message);
         writer.flush();
     }
