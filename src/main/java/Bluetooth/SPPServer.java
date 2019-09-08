@@ -58,6 +58,7 @@ public class SPPServer extends Thread {
                 out = connection.openOutputStream();
                 writer = new PrintWriter(new OutputStreamWriter(out));
                 writerPool.add(writer);
+
                 System.out.println("Received SPP connection " + (++count) + " of " + CameraApp.cameras);
                 RemoteDevice device = RemoteDevice.getRemoteDevice(connection);
                 System.out.println("Remote device address: " + device.getBluetoothAddress());
@@ -72,6 +73,7 @@ public class SPPServer extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        sendCommand("ACK");
     }
 
     /**

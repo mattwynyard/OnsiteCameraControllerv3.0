@@ -41,7 +41,7 @@ public class CameraApp {
                 mBluetooth.tcpServer.sendDataDB("NOTRECORDING,");
                 mBluetooth.tcpServer.sendDataDB("NOTCONNECTED,");
                 mBluetooth.tcpServer.sendDataDB("ERROR,");
-                mBluetooth.sppServer.
+                //mBluetooth.sppServer.
                 mBluetooth.tcpServer.closeAll();
             }
         }
