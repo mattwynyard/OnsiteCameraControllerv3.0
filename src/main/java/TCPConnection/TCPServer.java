@@ -5,7 +5,8 @@ import java.net.*;
 
 import Bluetooth.SPPServer;
 
-public class TCPServer {
+
+public class TCPServer  {
 
     private InputStream in;
     private ServerSocket server;
@@ -14,22 +15,19 @@ public class TCPServer {
     private Socket photoClient; //access socket
     private Thread mReadThread;
     private PrintWriter writer; //writes to DB
-    //private PrintWriter photoWriter; //writes to DB]
-    //private OutputStream photoOut;
+    private PrintWriter photoWriter; //writes to DB]
+    private OutputStream photoOut;
     public SPPServer mPhoneServer;
 
-    /**
-     * TCPServer constructor which creates a new server socket on local host port 38200 then calls start() method
-     */
     public TCPServer(int port) {
         try {
             // create the main server socket
             server = new ServerSocket(port, 0, InetAddress.getByName(null));
 
-//            photoServer = new ServerSocket(38300, 0, InetAddress.getByName(null));
-//            if (photoServer != null) {
-//                System.out.println("Server socket listening on: "+ photoServer.getLocalSocketAddress());
-//            }
+            photoServer = new ServerSocket(38300, 0, InetAddress.getByName(null));
+            if (photoServer != null) {
+                System.out.println("Server socket listening on: "+ photoServer.getLocalSocketAddress());
+            }
         } catch (IOException e) {
             System.out.println("Error: " + e);
             return;
@@ -43,11 +41,11 @@ public class TCPServer {
         try {
             // wait for a connection
             client = server.accept();
-            //photoClient = photoServer.accept();
+            photoClient = photoServer.accept();
             System.out.println("\nAccepted TCP connection from " + client.getRemoteSocketAddress());
-            //System.out.println("Accepted TCP connection from " + photoClient.getRemoteSocketAddress() + "\n");
+            System.out.println("Accepted TCP connection from " + photoClient.getRemoteSocketAddress() + "\n");
             writer = new PrintWriter(client.getOutputStream());
-            //photoOut = photoClient.getOutputStream();
+            photoOut = photoClient.getOutputStream();
             mReadThread = new Thread(readFromClient);
             mReadThread.setPriority(Thread.MAX_PRIORITY);
             mReadThread.start();
@@ -73,21 +71,21 @@ public class TCPServer {
         writer.flush();
     }
 
-//    /** Sends a message to the client, in this case VBA via C# .dll
-//     *
-//     * @param bytes - photo byte array.
-//     */
-//    public synchronized void sendPhotoDB(byte[] bytes) {
-//
-//        try {
-//            //photoOut.write(bytes);
-//            //photoOut.flush();
-//            System.out.println("J: Photo bytes " + bytes.length);
-//        } catch(IOException e) {
-//            System.out.println("socket error");
-//            e.printStackTrace();
-//        }
-//    }
+    /** Sends a message to the client, in this case VBA via C# .dll
+     *
+     * @param bytes - photo byte array.
+     */
+    public void sendPhotoDB(byte[] bytes) {
+
+        try {
+            photoOut.write(bytes);
+            photoOut.flush();
+            System.out.println("J: Photo bytes " + bytes.length);
+        } catch(IOException e) {
+            System.out.println("socket error");
+            e.printStackTrace();
+        }
+    }
 
 
     public void sendDataAndroid(String message) {
@@ -102,9 +100,12 @@ public class TCPServer {
     public void closeAll() {
         try {
             writer.close();
+            photoOut.close();
             in.close();
             server.close();
+            photoServer.close();
             client.close();
+            photoClient.close();
             writer = null;
             mReadThread = null;
         } catch (IOException e) {

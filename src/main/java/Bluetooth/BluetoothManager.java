@@ -13,7 +13,8 @@ import javax.bluetooth.RemoteDevice;
 import java.io.IOException;
 import java.util.Vector;
 
-public class BluetoothManager extends Thread  {
+
+public class BluetoothManager extends Thread {
 	
 	private LocalDevice mLocalDevice;
 	private RemoteDevice mRemoteDevice;
@@ -61,7 +62,6 @@ public class BluetoothManager extends Thread  {
             sppServer.setTCPServer(tcpServer);
             //System.out.println("TCP Server waiting for connection...");
         }
-        start = System.currentTimeMillis();
 	}
 
 } //end class

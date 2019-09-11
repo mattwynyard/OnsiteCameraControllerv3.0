@@ -232,7 +232,7 @@ public class SPPServer extends Thread {
                                     //photoName = message.substring(22, 43);
                                     photoName = message.substring(29, 53);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
-                                    //mTCP.sendPhotoDB(mPhotoOut.toByteArray());
+                                    mTCP.sendPhotoDB(mPhotoOut.toByteArray());
                                 }
                                 ByteArrayOutputStream tempBuffer = new ByteArrayOutputStream();
                                 tempBuffer.write(byteBuffer.toByteArray(), payloadSize, byteBuffer.size() - payloadSize);
@@ -247,7 +247,7 @@ public class SPPServer extends Thread {
                                     //photoName = message.substring(22, 43);
                                     photoName = message.substring(26, 53);
                                     CameraApp.setIcon(mPhotoOut.toByteArray(), photoName);
-                                    //mTCP.sendPhotoDB(mPhotoOut.toByteArray());
+                                    mTCP.sendPhotoDB(mPhotoOut.toByteArray());
                                     byteBuffer.reset();
                                     mPhotoOut.reset();
                                     metadata = true;
