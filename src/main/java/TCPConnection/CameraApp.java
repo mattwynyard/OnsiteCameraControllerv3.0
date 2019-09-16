@@ -12,10 +12,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
 import Bluetooth.BluetoothManager;
+import Bluetooth.Client;
 
 
 /**
@@ -41,7 +43,10 @@ public class CameraApp {
                 mBluetooth.tcpServer.sendDataDB("NOTRECORDING,");
                 mBluetooth.tcpServer.sendDataDB("NOTCONNECTED,");
                 mBluetooth.tcpServer.sendDataDB("ERROR,");
-                //mBluetooth.sppServer.
+                ArrayList<Client> clients =  mBluetooth.sppServer.getThreadPool();
+                for (Client client : clients) {
+                    client.closeAll();
+                }
                 mBluetooth.tcpServer.closeAll();
             }
         }
